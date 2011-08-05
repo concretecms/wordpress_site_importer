@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<schema version="0.3">
+	<table name="WordpressItems">
+		<field name="id" type="I" size="11">
+			<NOTNULL/>
+			<KEY/>
+			<AUTOINCREMENT/>
+		</field>
+		<field name="wpItem" type="longtext">
+			<NOTNULL/>
+		</field>
+		<field name="imported" type="tinyint" size="1">
+			<NOTNULL/>
+			<default value="0"/>
+		</field>
+	</table>
+</schema>
