@@ -3,7 +3,13 @@
 class DashboardWordpressImportController extends Controller{
 
 	function __construct() {
-		$this->redirect('/dashboard/wordpress_import/file');
+		$db = Loader::db();
+		$records = $db->GetOne("select count(*) from WordpressItems where imported = 0");
+		if($records > 0) {
+			$this->redirect('/dashboard/wordpress_import/import');
+		} else {
+			$this->redirect('/dashboard/wordpress_import/file');
+		}
 	}
 	
 }
