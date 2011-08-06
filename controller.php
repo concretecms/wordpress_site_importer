@@ -14,13 +14,13 @@ class WordpressSiteImporterPackage extends Package {
 	$pkg = parent::install();
     Loader::model('single_page');
     $single_page = SinglePage::add('/dashboard/wordpress_import', $pkg);
-    $single_page->update(array('cName' => 'WordPress Import', 'cDescription' => 'Import WordPress Sites'));  
+    $single_page->update(array('cName' => t('WordPress Import'), 'cDescription' => t('Import WordPress Sites')));  
 
 	$import_stuff = SinglePage::add('/dashboard/wordpress_import/import',$pkg);
-	$import_stuff->update(array('cName' => 'Import'));  
+	$import_stuff->update(array('cName' => t('Import')));  
 	
 	$import_stuff = SinglePage::add('/dashboard/wordpress_import/file',$pkg);
-	$import_stuff->update(array('cName' => 'File'));  
+	$import_stuff->update(array('cName' => t('File')));  
 	
   }
 }

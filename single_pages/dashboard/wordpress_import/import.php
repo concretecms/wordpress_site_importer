@@ -14,7 +14,7 @@ $user = Loader::helper('form/user_selector');
 
 var wpImport = { 
 	start_import_not_home: function() {
-			if(confirm("<?php echo  t("Are tou sure that's where you want your entire blog to go?"); ?>")) 
+			if(confirm("<?php echo  t("Are you sure that's where you want your entire blog to go?"); ?>")) 
 				wpImport.start_import();
 			else
 				return false;
