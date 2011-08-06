@@ -4,12 +4,12 @@ Loader::model('page_lite','wordpress_site_importer');
 //something that would make this truly nice and almost 1:1 with a wordpress site would be to have a page for each "category"
 //basically that's the only thing this isn't doing aside from bringing in comments in some form.
 
-class DashboardWordpressImportSiteController extends Controller{
+class DashboardWordpressImportImportController extends Controller{
 	protected $fileset;
 	protected $createdFiles = array();
 	protected $importImages = false;
 	protected $importFiles;
-	protected $filesetname = 'wp-stuff';
+	protected $filesetname = 'Wordpress Files';
 	protected $createFileSet;
 
 	function on_start(){
@@ -188,7 +188,9 @@ class DashboardWordpressImportSiteController extends Controller{
 			if(is_array($kids) && count($kids)){
 				//move our pages to whatever is specified
 				foreach($kids as $pageThatNeedsMoved){
-					$createdPagesReal[$pageThatNeedsMoved]->move($createdPagesReal[$parentID]);
+					if(intval($createdPagesReal[$parentID])) {
+						$createdPagesReal[$pageThatNeedsMoved]->move($createdPagesReal[$parentID]);
+					}
 				}
 			}
 		}

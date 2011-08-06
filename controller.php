@@ -16,7 +16,12 @@ class WordpressSiteImporterPackage extends Package {
     $single_page = SinglePage::add('/dashboard/wordpress_import', $pkg);
     $single_page->update(array('cName' => 'WordPress Import', 'cDescription' => 'Import WordPress Sites'));  
 
-	 $import_stuff = SinglePage::add('/dashboard/wordpress_import/site',$pkg);
+	$import_stuff = SinglePage::add('/dashboard/wordpress_import/import',$pkg);
+	$import_stuff->update(array('cName' => 'Import'));  
+	
+	$import_stuff = SinglePage::add('/dashboard/wordpress_import/file',$pkg);
+	$import_stuff->update(array('cName' => 'File'));  
+	
   }
 }
 ?>
