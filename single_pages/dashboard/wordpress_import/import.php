@@ -14,7 +14,7 @@ $user = Loader::helper('form/user_selector');
 
 var wpImport = { 
 	start_import_not_home: function() {
-			if(confirm("<?php echo  t("Seriously? That's where you want your entire blog to go?"); ?>")) 
+			if(confirm("<?php echo  t("Are you sure that's where you want your entire blog to go?"); ?>")) 
 				wpImport.start_import();
 			else
 				return false;
@@ -58,8 +58,11 @@ var wpImport = {
 	},
 	show_link: function() {
 		$.post('<?php echo  $this->action('get_root_page') ?>', $("#import-wordpress-form").serialize(), function(data) {
-			if(data.title) {
+			if(data.title && data.url) {
 				$("#progress .parent-page").html('<?php echo  t("Visit your imported pages: ")?><a href="<?php echo  BASE_URL.DIR_REL ?>'+data.url+'">'+data.title+'</a>');
+				$("#progress .parent-page").show("fast");
+			} else if(data.title) {
+				$("#progress .parent-page").html('<?php echo  t("Visit your imported pages: ")?><a href="<?php echo  BASE_URL.DIR_REL ?>">'+data.title+'</a>');
 				$("#progress .parent-page").show("fast");
 			}
 		},"json");
@@ -80,14 +83,14 @@ var wpImport = {
 <div class="ccm-dashboard-inner">
    <?php   if (is_array($errors) && count($errors) > 0){ ?>
     <div id="errors" style="height:auto; margin-left:30px;">
-        <h2>Errors while Importing</h2>
+        <h2><?php echo t('Errors while Importing')?></h2>
         <ul>
        <?php   foreach($errors as $e){
-            echo "<li>Error - {$e}</li>";
+            echo "<li>".t('Error')." - {$e}</li>";
         } ?>
         </ul>
-        <p>Note: You will receive errors for file attachment posts. These files are already referenced in posts/pages and are found, so errors here
-        are simply to let you know that something other than a page or a post was found in your export.</p>
+        <p><?php echo t('Note: You will receive errors for file attachment posts. These files are already referenced in posts/pages and are found, so errors here
+        are simply to let you know that something other than a page or a post was found in your export.')?></p>
     </div>
    <?php   } ?>
 	<div id="progress">
@@ -112,8 +115,8 @@ var wpImport = {
         <h2><?php echo t('And one for WordPress "Posts":')?></h2>
         <?php   echo $form->select('wordpress-blogs',$collectiontypes); ?>
         <br />&nbsp;<br/>
-        <h2>Import Options</h2>
-        <label for="input-images"><?php echo t("Images? ")?></label><input type="checkbox" name="import-images"  />
+        <h2><?php echo t('Import Options')?></h2>
+        <label for="input-images"><?php echo t("Import Images? ")?></label><input type="checkbox" name="import-images"  />
         
         <div id="import-images-settings">
             <label for="file-set-name"><?php echo  t("New file set for imported images: ") ?></label><input type="text" name="file-set-name" value="" />
