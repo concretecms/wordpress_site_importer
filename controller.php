@@ -1,12 +1,16 @@
 <?php  defined('C5_EXECUTE') or die(_("Access Denied."));
 
 class WordpressSiteImporterPackage extends Package {
-  protected $pkgDescription = 'Add wordpress import capability to your site';
-  protected $pkgName = "WordPress Site Importer";
   protected $pkgHandle = 'wordpress_site_importer';
-
   protected $appVersionRequired = '5.3.3.1';
   protected $pkgVersion = '1.0';
+		 public function getPackageDescription() {
+			  return t("Add wordpress import capability to your site");
+		 }
+
+		 public function getPackageName() {
+			  return t("WordPress Site Importer");
+		 }
 
 
   public function install() {
