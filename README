@@ -15,6 +15,9 @@ Not so great:
   - icon.png does not look good
 
 Would be nice:
+  - Import comments
+  - Import tags
+  - Import categories (or be able to choose a different top-level C5 page to import all posts of just one category under)
   - Have an option to import "posts" under one page and "pages" under another.
   - Option to import just posts or just pages.
   - Include a new page type called "WordPress Post" that is basically the "Blog" page type but without the lipsum text.
