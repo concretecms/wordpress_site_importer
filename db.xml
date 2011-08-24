@@ -13,5 +13,13 @@
 			<NOTNULL/>
 			<default value="0"/>
 		</field>
+		<field name="cID" type="I" size="11">
+		</field>
+		<field name="wpID" type="I" size="11">
+		</field>
+		<field name="wpParentID" type="I" size="11">
+		</field>
+		<field name="wpPostType" type="C"  size="4">
+		</field>
 	</table>
 </schema>

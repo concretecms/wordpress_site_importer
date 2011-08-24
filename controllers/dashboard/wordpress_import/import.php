@@ -23,13 +23,16 @@ class DashboardWordpressImportImportController extends Controller{
 		$this->set('collectiontypes',$cts);
 	}
 
-	public function get_root_page() {
+	public function get_root_pages() {
 		Loader::model('page');
 		$json = Loader::helper('json');
 		$data = array();
-		$rootPage = Page::getByID($this->post('new-root-wordpress'));
-		$data['title'] = $rootPage->getCollectionName();
-		$data['url'] = $rootPage->getCollectionPath();
+		$pageRoot = Page::getByID($this->post('new-root-pages'));
+		$data['page-title'] = $pageRoot->getCollectionName();
+		$data['page-url'] = $pageRoot->getCollectionPath();
+		$postRoot = Page::getByID($this->post('new-root-posts'));
+		$data['post-title'] = $postRoot->getCollectionName();
+		$data['post-url'] = $postRoot->getCollectionPath();
 		echo $json->encode($data);
 		exit;
 	}
@@ -50,8 +53,78 @@ class DashboardWordpressImportImportController extends Controller{
 			exit;
 			*/
 		} else {
+			// sort out by parent ID here
+			$pageroot = Page::getByID($this->post('new-root-pages'));
+			$postroot = Page::getByID($this->post('new-root-posts'));
+			$pages = $db->getAll("SELECT cID, wpID, wpParentID, wpPostType FROM WordpressItems");
+			$all_categories = array();
+			foreach($pages as $page){
+				if (intval($page['wpParentID']) > 0) {
+					// have a parent id, figure out where this one goes
+					$q  = "SELECT cID FROM WordpressItems WHERE wpID = ?";
+					$v = array($page['wpParentID']);
+					$parentCID = $db->getOne($q, $v);
+					if (intval($parentCID)>0){
+						$newParent = Page::getByID($parentCID);
+						$rowPage = Page::getByID($page['cID']);
+						$rowPage->move($newParent);
+					} else {
+						$rowPage = Page::getByID($page['cID']);
+						if ($page['wpPostType'] == "POST"){
+							$rowPage->move($postroot);
+						} else {
+							$rowPage->move($pageroot);
+						}
+					}
+				} else {
+					// no parent, goes off the root
+					$rowPage = Page::getByID($page['cID']);
+					if ($page['wpPostType'] == "POST"){
+						$rowPage->move($postroot);
+					} else {
+						$rowPage->move($pageroot);
+					}
+				}
+
+			}
 			echo 0;
 			exit;
+		}
+
+          $co = new Config;
+          $pkg = Package::getByHandle('wordpress_site_importer');
+          $co->setPackageObject($pkg);
+          $importFID = $co->get("WORDPRESS_IMPORT_FID");
+
+          Loader::model('file');
+          $importFile = File::getByID($importFID);
+		$nv = $importFile->getVersion();
+		$fileUrl =  $nv->getDownloadURL();
+		$meta_xml = @simplexml_load_file($fileUrl);
+
+          $categories = array();
+		$meta_namespaces = $meta_xml->getDocNamespaces();
+          foreach ( $meta_xml->xpath('/rss/channel/wp:category') as $term_arr ) {
+               $t = $term_arr->children( $meta_namespaces['wp'] );
+               $nicename = (string) $t->category_nicename;
+               $categories[$nicename] = array(
+               'term_id' => (int) $t->term_id,
+               'category_nicename' => (string) $t->category_nicename,
+               'category_parent' => (string) $t->category_parent,
+               'cat_name' => (string) $t->cat_name,
+               'category_description' => (string) $t->category_description
+               );
+          }
+
+          foreach ( $meta_xml->xpath('/rss/channel/wp:tag') as $term_arr ) {
+			$t = $term_arr->children( $meta_namespaces['wp'] );
+               $slug = (string) $t->tag_slug;
+			$tags[$slug] = array(
+				'term_id' => (int) $t->term_id,
+				'tag_slug' => (string) $t->tag_slug,
+				'tag_name' => (string) $t->tag_name,
+				'tag_description' => (string) $t->tag_description
+			);
 		}
 
 		$ids = array();
@@ -59,7 +132,6 @@ class DashboardWordpressImportImportController extends Controller{
 
 			libxml_use_internal_errors;
 			$item = @new SimpleXMLElement($wpItem['wpItem']);
-
 			$p = new PageLite();
 
 			//Use that namespace
@@ -94,7 +166,23 @@ class DashboardWordpressImportImportController extends Controller{
 			$dc = $item->children($namespaces['dc']);
 			$author = (string)$dc->creator;
 			$parentID = (int)$wp->post_parent;
-			$category = (string)$item->category;
+
+               $out_tags = array();
+               $out_categories = array();
+
+               foreach ( $item->category as $c ) {
+				$att = $c->attributes();
+				if ( isset( $att['nicename'] ) ){
+                         $nicename = (string) $att['nicename'];
+                         if ($att['domain']== "category"){
+                              $realname = $categories[$nicename]['cat_name'];
+                              $out_categories[] = $realname;
+                         } else {
+                              $realname = $tags[$nicename]['tag_name'];
+                              $out_tags[] = $realname;
+                         }
+                    }
+			}
 
 			$p->setTitle($title);
 			$p->setContent($content);
@@ -102,12 +190,13 @@ class DashboardWordpressImportImportController extends Controller{
 			$p->setWpParentID($parentID);
 			$p->setPostDate($postDate);
 			$p->setPostType($postType);
-			$p->setCategory($category);
+			$p->setCategory($out_categories);
+               $p->setTags($out_tags);
 			$p->setPostID($wpPostID);
 			$p->setExcerpt($excerpt);
 
 			//so we just throw these guys in an array
-			$pages[$p->getPostID()] = $p; //postID is unique
+			$pages[$wpItem['id']] = $p; //postID is unique
 			$ids[] = $wpItem['id'];
 			$data['titles'][] = $title;
 			
@@ -145,7 +234,8 @@ class DashboardWordpressImportImportController extends Controller{
 		$errors = array();
 		//$message = '';
 		//get our root page
-		$rootPage = Page::getByID($this->post('new-root-wordpress'));
+		$pageroot = Page::getByID($this->post('new-root-pages'));
+		$postroot = Page::getByID($this->post('new-root-posts'));
 		//this is how / where to set another page for page-type pages.
 
 		//ok so basically our keys in our array are wordpress postIDs, which are pages in the system
@@ -165,53 +255,77 @@ class DashboardWordpressImportImportController extends Controller{
 		//so our homepage is zero, and we need that in our created page, even though it isn't a page that is created for association issues but it absolutely has to be 0.
 		//Then it is a relational mapping issue, this puppy took a bit of thought
 		//
-		$createdPagesReal[0] = $rootPage;
+		$createdPagesReal[0] = $pageroot;
 		//so foreach pages
-		foreach($pages as $pageLite){
+		foreach($pages as $xmlID => $pageLite){
 			$ct = $collectionTypesForWordpress[$pageLite->getPostType()];
 
 
 			//create the pages
 			//right now i am only handling posts and pages, we have to ignore attachments as they are posted elsewhere or referenced in posts or pages
 			if(is_a($ct,CollectionType)){
-				$createdPagesReal[$pageLite->getPostID()] =  $this->addWordpressPage($rootPage, $ct, $pageLite);
+				if ($pageLite->getPostType() == "POST"){
+					$createdPagesReal[$pageLite->getPostID()] =  $this->addWordpressPage($postroot, $ct, $pageLite, $xmlID);
+				} else {
+					$createdPagesReal[$pageLite->getPostID()] =  $this->addWordpressPage($pageroot, $ct, $pageLite, $xmlID);
+				}
 				//here's how we map our pages to pages
-				$parentIDPageLiteRel[$pageLite->getWpParentID()][] = $pageLite->getPostID();
+				
 			}else{
 				//this is kind of spooky and frustrating to see.
 				$errors[] = t("Un-supported post type for post - ").$pageLite->getTitle();
 			}
 		}
-		//so right here basically all we do is move the kid page right under the parent page. what is cool about concrete5 is that you don't need any sort of
-		//order or anything, pages can be added under pages and it is all just figured out here rather elegantly
-		foreach($parentIDPageLiteRel as $parentID => $kids){
-			if(is_array($kids) && count($kids)){
-				//move our pages to whatever is specified
-				foreach($kids as $pageThatNeedsMoved){
-					if(intval($createdPagesReal[$parentID])) {
-						$createdPagesReal[$pageThatNeedsMoved]->move($createdPagesReal[$parentID]);
-					}
-				}
-			}
-		}
-		$this->set('message',t('Wordpress Export Imported under ').$rootPage->getCollectionName());
+		
+		$this->set('message',t('Wordpress export pages imported under ').$pageroot->getCollectionName().".<br /> ". t('Wordpress export posts imported under ').$postroot->getCollectionName().".");
 		$this->set('errors',$errors);
 	}
 	
 	
 	// this function takes a page as an arguement, the collection type and a page-lite object.
-	function addWordpressPage(Page $p, CollectionType $ct, PageLite $pl){
+	function addWordpressPage(Page $p, CollectionType $ct, PageLite $pl, $xmlID){
 /*		echo $pl->getPostdate();
 		exit;
 		*/
-		$pageData = array('cName' => $pl->getTitle(),'cDatePublic'=>$pl->getPostdate(),'cDateAdded'=>$pl->getPostdate(),'cDescription' => $pl->getExcerpt());
+		$u = new User();
+		$pageAuthor = $pl->getAuthor();
+		$ui = UserInfo::getByUserName($pageAuthor);
+
+		if (is_object($ui)){
+			$uID = $ui->getUserID();
+		} else {
+			$uID = $u->getUserID();
+		}
+
+
+		$pageData = array('cName' => $pl->getTitle(),'cDatePublic'=>$pl->getPostdate(),'cDateAdded'=>$pl->getPostdate(),'cDescription' => $pl->getExcerpt(), 'uID'=> $uID);
 		$newPage = $p->add($ct,$pageData);
+
+          if (is_array($pl->getCategory())){
+              $newPage->setAttribute('wordpress_category', $pl->getCategory());
+          }
+          if (is_array($pl->getTags())){
+              $newPage->setAttribute('tags', $pl->getTags());
+          }
+		$blocks = $newPage->getBlocks("Main");
+		foreach($blocks as $block){
+			$block->delete();
+		}
+		$blocks = $newPage->getBlocks("Blog Post More");
+		foreach($blocks as $block){
+			$block->delete();
+		}
 		Loader::model('block_types');
 		$bt = BlockType::getByHandle('content');
 		$data = array();
 
 		$data['content'] = ($this->importImages) ? $this->determineImportableMediaFromContent($pl->getContent(),$pageData) : $pl->getContent(); //we're either importing images or not
 		$newPage->addBlock($bt, "Main", $data);
+
+		$db = Loader::db();
+		$q = 'UPDATE WordpressItems SET cID = ?, wpID = ?, wpParentID = ?, wpPostType = ? WHERE id=?';
+		$v = array($newPage->getCollectionID(), $pl->getPostID(), $pl->getWpParentID(),$pl->getPostType(),$xmlID);
+		$res = $db->query($q, $v);
 		return $newPage;
 	}
 

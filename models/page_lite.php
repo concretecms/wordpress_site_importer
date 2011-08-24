@@ -8,6 +8,7 @@ class PageLite extends Object{
 	protected $author;
 	protected $postType;
 	protected $category;
+     protected $tags;
 	protected $postDate;
 	protected $wpPostID; //needed to relate
 	function setPropertiesFromArray($array){
@@ -56,6 +57,12 @@ class PageLite extends Object{
 	}
 	function getCategory(){
 		return $this->category;
+	}
+     function setTags($tags){
+		$this->tags = $tags;
+	}
+	function getTags(){
+		return $this->tags;
 	}
 	function setPostDate($date){
 		$this->postDate = $date;
