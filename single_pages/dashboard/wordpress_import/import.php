@@ -52,34 +52,34 @@ $user = Loader::helper('form/user_selector');
 					wpImport.continue_import(remain,done);
 				} else {
 					$("#progress h1").html("Import Finished.");
-					wpImport.importCategories();
 					$("#progress .titles").hide("slow");
+					wpImport.show_link();
 				}
 			},"json");
 		},
 		show_link: function() {
-			$.post('<?php echo $this->action('get_root_page') ?>', $("#import-wordpress-form").serialize(), function(data) {
-				if (data.post-url == data.page-url){
-					if(data.post-title && data.post-url) {
-						$("#progress .parent-page").html('<?php echo t("Visit your imported site: ") ?><a href="<?php echo BASE_URL . DIR_REL ?>'+data.url+'">'+data.title+'</a>');
+			$.post('<?php echo $this->action('get_root_pages') ?>', $("#import-wordpress-form").serialize(), function(data) {
+				if (data.post_url == data.page_url){
+					if(data.post_title && data.post_url) {
+						$("#progress .parent-page").html('<?php echo t("Visit your imported site: ") ?><a href="<?php echo BASE_URL . DIR_REL ?>'+data.page_url+'">'+data.page_title+'</a>');
 						$("#progress .parent-page").show("fast");
-					} else if(data.post-title) {
-						$("#progress .parent-page").html('<?php echo t("Visit your imported site: ") ?><a href="<?php echo BASE_URL . DIR_REL ?>">'+data.title+'</a>');
+					} else if(data.post_title) {
+						$("#progress .parent-page").html('<?php echo t("Visit your imported site: ") ?><a href="<?php echo BASE_URL . DIR_REL ?>">'+data.page_title+'</a>');
 						$("#progress .parent-page").show("fast");
 					}
 				} else {
-					if(data.post-title && data.post-url) {
-						$("#progress .parent-page").html('<?php echo t("Visit your imported posts: ") ?><a href="<?php echo BASE_URL . DIR_REL ?>'+data.url+'">'+data.title+'</a>');
-						$("#progress .parent-page").show("fast");
-					} else if(data.post-title) {
-						$("#progress .parent-page").html('<?php echo t("Visit your imported posts: ") ?><a href="<?php echo BASE_URL . DIR_REL ?>">'+data.title+'</a>');
-						$("#progress .parent-page").show("fast");
+					if(data.post_title && data.post_url) {
+						$("#progress .parent-post").html('<?php echo t("Visit your imported posts: ") ?><a href="<?php echo BASE_URL . DIR_REL ?>'+data.post_url+'">'+data.post_title+'</a>');
+						$("#progress .parent-post").show("fast");
+					} else if(data.post_title) {
+						$("#progress .parent-post").html('<?php echo t("Visit your imported posts: ") ?><a href="<?php echo BASE_URL . DIR_REL ?>">'+data.post_title+'</a>');
+						$("#progress .parent-post").show("fast");
 					}
-					if(data.post-title && data.post-url) {
-						$("#progress .parent-page").html('<?php echo t("Visit your imported posts: ") ?><a href="<?php echo BASE_URL . DIR_REL ?>'+data.url+'">'+data.title+'</a>');
+					if(data.page_title && data.page_url) {
+						$("#progress .parent-page").html('<?php echo t("Visit your imported pages: ") ?><a href="<?php echo BASE_URL . DIR_REL ?>'+data.page_url+'">'+data.page_title+'</a>');
 						$("#progress .parent-page").show("fast");
-					} else if(data.post-title) {
-						$("#progress .parent-page").html('<?php echo t("Visit your imported posts: ") ?><a href="<?php echo BASE_URL . DIR_REL ?>">'+data.title+'</a>');
+					} else if(data.page_title) {
+						$("#progress .parent-page").html('<?php echo t("Visit your imported pages: ") ?><a href="<?php echo BASE_URL . DIR_REL ?>">'+data.page_title+'</a>');
 						$("#progress .parent-page").show("fast");
 					}
 				}
@@ -119,6 +119,8 @@ $user = Loader::helper('form/user_selector');
 			<div class="bar">
 			</div>
 			<p class="parent-page">
+			</p>
+			<p class="parent-post">
 			</p>
 			<ul class="titles" >
 			</ul>

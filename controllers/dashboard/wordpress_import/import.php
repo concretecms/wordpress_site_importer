@@ -28,11 +28,11 @@ class DashboardWordpressImportImportController extends Controller{
 		$json = Loader::helper('json');
 		$data = array();
 		$pageRoot = Page::getByID($this->post('new-root-pages'));
-		$data['page-title'] = $pageRoot->getCollectionName();
-		$data['page-url'] = $pageRoot->getCollectionPath();
+		$data['page_title'] = $pageRoot->getCollectionName();
+		$data['page_url'] = $pageRoot->getCollectionPath();
 		$postRoot = Page::getByID($this->post('new-root-posts'));
-		$data['post-title'] = $postRoot->getCollectionName();
-		$data['post-url'] = $postRoot->getCollectionPath();
+		$data['post_title'] = $postRoot->getCollectionName();
+		$data['post_url'] = $postRoot->getCollectionPath();
 		echo $json->encode($data);
 		exit;
 	}

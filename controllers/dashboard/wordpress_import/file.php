@@ -74,7 +74,7 @@ class DashboardWordpressImportFileController extends Controller{
 				$opt = new SelectAttributeTypeOption(0, $tags[$i]['tag_name'], $i);
 				$opt = $opt->saveOrCreate($akt);
 			}
-
+			
 		} else {
 			echo t("No file");
 			exit;

@@ -47,6 +47,9 @@ class WordpressSiteImporterPackage extends Package {
 
 	public function uninstall() {
 		$db = Loader::db();
+		
+		$dashPage = Page::getByPath("/dashboard/wordpress_import");
+		$dashPage->delete();
 		$db->Execute('drop table WordpressItems');
 		parent::uninstall();
 	}
