@@ -29,7 +29,7 @@ class DashboardWordpressImportFileController extends Controller{
 			$importFile = File::getByID($this->post('wp-file'));
 			$nv = $importFile->getVersion();
 			$fileUrl =  $nv->getDownloadURL();
-			$xml = @simplexml_load_file($fileUrl);
+			$xml = @simplexml_load_file($fileUrl, "SimpleXMLElement", LIBXML_NOCDATA);
 
 			$items = array();
 			foreach($xml->channel->item as $item) {

@@ -141,6 +141,9 @@ class DashboardWordpressImportImportController extends Controller{
 			//Now we don't have the URL hard-coded
 
 			$wp = $item->children($namespaces['wp']);
+			if ($wp->status == "auto-draft"){
+				continue;
+			}
 			$wpPostID = (int)$wp->post_id;
 			$content = $item->children($namespaces['content']);
 			$content = wpautop((string)$content->encoded);
@@ -151,15 +154,34 @@ class DashboardWordpressImportImportController extends Controller{
 				then [/caption] with the image and then <span class="wp-caption-text">$caption_text</span></div>
 				???
 			*/
-			/*
-				comments...
-				Can't figure out why this is not working for the comments.
-			*/
-		/*	$comments = $wp->comment->asXML();
-			var_dump($comments);
-			var_dump($comments->asXML());
-			 //echo $comments->asXML();
-			exit;*/
+			$comments = $wp->comment;
+			$all_comments = array();
+			if (count($comments)>0){
+				if (intval($comments->comment_id)>0) {
+					// single comment
+					$comment_details = array();
+					$comment_details['commentText'] = (string) $comments->comment_content;
+					$comment_details['name'] = (string) $comments->comment_author;
+					$comment_details['email'] = (string) $comments->comment_author_email;
+					$comment_details['approved'] = (int) $comments->comment_approved;
+					$comment_details['comment_type'] = (string) $comments->comment_type;
+					$comment_details['comment_date'] = (string) $comments->comment_date;
+					$all_comments[] = $comment_details;
+				} else {
+					// we have multiple comments for this post, loop over them in turn.
+
+					foreach($comments as $comment){
+						$comment_details = array();
+						$comment_details['commentText'] = (string) $comment->comment_content;
+						$comment_details['name'] = (string) $comment->comment_author;
+						$comment_details['email'] = (string) $comment->comment_author_email;
+						$comment_details['approved'] = (int) $comment->comment_approved;
+						$comment_details['comment_type'] = (string) $comments->comment_type;
+						$comment_details['comment_date'] = (string) $comments->comment_date;
+						$all_comments[] = $comment_details;
+					}
+				}
+			}
 			$excerpt = $item->children($namespaces['excerpt']);
 			$postDate = (string)$wp->post_date;
 			$postType = (string)$wp->post_type;
@@ -194,6 +216,7 @@ class DashboardWordpressImportImportController extends Controller{
                $p->setTags($out_tags);
 			$p->setPostID($wpPostID);
 			$p->setExcerpt($excerpt);
+			$p->setComments($all_comments);
 
 			//so we just throw these guys in an array
 			$pages[$wpItem['id']] = $p; //postID is unique
@@ -307,6 +330,35 @@ class DashboardWordpressImportImportController extends Controller{
           if (is_array($pl->getTags())){
               $newPage->setAttribute('tags', $pl->getTags());
           }
+		if (count($pl->getComments())>0){
+			$blocks = $newPage->getBlocks("Blog Post Footer");
+			$haveGuestbook = 0;
+			foreach($blocks as $block){
+				if ($block->getBlockTypeHandle() == "guestbook"){
+					$bID = $block->getBlockID();
+					$haveGuestbook = 1;
+				}
+			}
+			if ($haveGuestbook == 0){
+				$data = array();
+				$data['title'] = "Comments:";
+				$data['dateFormat'] = "M jS, Y";
+				$data['requireApproval'] = 0;
+				$data['displayGuestBookForm'] = 1;
+				$data['authenticationRequired'] = 0;
+				$data['displayCaptcha'] = 1;
+				$bt = BlockType::getByHandle("guestbook");
+				$guestbook = $newPage->addBlock($bt, "Blog Post Footer", $data);
+				$bID = $guestbook->getBlockID();
+			}
+			Loader::model('comment_lite','wordpress_site_importer');
+			$comments = $pl->getComments();
+			foreach ($comments as $comment){
+				if (!$comment['comment_type'] == "pingback"){
+					CommentLite::addcomment($bID, $comment['commentText'], $comment['name'], $comment['email'], $comment['approved'], $newPage->getCollectionID(), 0, $comment['comment_date']);
+				}
+			}
+		}
 		$blocks = $newPage->getBlocks("Main");
 		foreach($blocks as $block){
 			$block->delete();

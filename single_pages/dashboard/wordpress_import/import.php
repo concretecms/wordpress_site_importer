@@ -32,7 +32,7 @@ $user = Loader::helper('form/user_selector');
 				if(data.processed) {
 					console.log(data);
 					remain = data.remain;
-					done = data.processed;
+					done += data.processed;
 					$("#progress .waiting").hide();
 					$("#progress .importing").show();
 					$("#progress .bar").progressbar({value: (done / remain) * 100});
