@@ -68,23 +68,8 @@ class DashboardWordpressImportImportController extends Controller{
 						$newParent = Page::getByID($parentCID);
 						$rowPage = Page::getByID($page['cID']);
 						$rowPage->move($newParent);
-					} else {
-						$rowPage = Page::getByID($page['cID']);
-						if ($page['wpPostType'] == "POST"){
-							$rowPage->move($postroot);
-						} else {
-							$rowPage->move($pageroot);
-						}
-					}
-				} else {
-					// no parent, goes off the root
-					$rowPage = Page::getByID($page['cID']);
-					if ($page['wpPostType'] == "POST"){
-						$rowPage->move($postroot);
-					} else {
-						$rowPage->move($pageroot);
-					}
-				}
+					} 
+				} 
 
 			}
 			echo 0;
@@ -142,6 +127,8 @@ class DashboardWordpressImportImportController extends Controller{
 
 			$wp = $item->children($namespaces['wp']);
 			if ($wp->status == "auto-draft"){
+				$ids[] = $wpItem['id'];
+				$data['titles'][] = $title;
 				continue;
 			}
 			$wpPostID = (int)$wp->post_id;
@@ -224,18 +211,15 @@ class DashboardWordpressImportImportController extends Controller{
 			$data['titles'][] = $title;
 			
 		}
-		//call the function below
-		$this->buildSiteFromWordPress($pages);
+		if (count($pages)>0){
+			//call the function below
+			$this->buildSiteFromWordPress($pages);
+		}
 
 		$db->Execute('UPDATE WordpressItems set imported=1 where id in('.implode(',',$ids).')');
 		$json = Loader::helper('json');
 		echo $json->encode($data);
 		exit;
-
-		//foreach ($xml->id as $id)
-		//idarray
-		//delete or set imported
-		
 	}
 	
 	
