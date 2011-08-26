@@ -12,6 +12,7 @@ What it is doing:
   - Imports Wordpress Tags to the 'tags' attribute
   - Removes all blocks from "Main" and "Blog Post More" areas on newly created pages to keep lipsum text from showing up
   - Imports comments and comment dates
+  - If users exist with the same username as a post author's username, uses that user for the author of the newly created page
 
 Not so great:
   - No "Start Over" on the first step.  Choosing a new database when you have existing records doesn't do anything so the dialog shouldn't be there.
