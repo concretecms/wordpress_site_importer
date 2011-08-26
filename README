@@ -25,3 +25,4 @@ Would be nice:
   - some kind of rudimentary support for image captions, like <div class="wp-import-image"> <img /> <span class="wp-import-caption">caption</span></div>
   - Somehow keep post url structure, or update internal links in post content
   - Better import of images, script as is tries to import flickr images that probably shouldn't be imported
+  - Keeping pingback comments would be nice if there was a comment block that supported pingbacks
