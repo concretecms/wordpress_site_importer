@@ -53,7 +53,7 @@ class DashboardWordpressImportFileController extends Controller{
 				'category_description' => (string) $t->category_description
 				);
 			}
-			Loader::model('attributes/categories/collection');
+			Loader::model('attribute/categories/collection');
 			$akt = CollectionAttributeKey::getByHandle("wordpress_category");
 			for ($i = 0; $i < count($categories); $i++) {
 				$opt = new SelectAttributeTypeOption(0, $categories[$i]['cat_name'], $i);
