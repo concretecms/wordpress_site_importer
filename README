@@ -11,6 +11,7 @@ What it is doing:
   - Imports Wordpress Categories to the attribute 'wordpress_categories' - no nested categories, but the category name is kept
   - Imports Wordpress Tags to the 'tags' attribute
   - Removes all blocks from "Main" and "Blog Post More" areas on newly created pages to keep lipsum text from showing up
+  - Imports comments and comment dates
 
 Not so great:
   - No "Start Over" on the first step.  Choosing a new database when you have existing records doesn't do anything so the dialog shouldn't be there.
