@@ -8,6 +8,7 @@ class PageLite extends Object{
 	protected $author;
 	protected $postType;
 	protected $category;
+     protected $tags;
 	protected $postDate;
 	protected $wpPostID; //needed to relate
 	function setPropertiesFromArray($array){
@@ -33,10 +34,10 @@ class PageLite extends Object{
 	function getWpParentID(){
 		return $this->wpParentID;
 	}
-	function setComment($comment){
-		$this->comments[] = $comment;
+	function setComments($comment){
+		$this->comments = $comment;
 	}
-	function getComment(){
+	function getComments(){
 		return $this->comments;
 	}
 	function setAuthor($author){
@@ -56,6 +57,12 @@ class PageLite extends Object{
 	}
 	function getCategory(){
 		return $this->category;
+	}
+     function setTags($tags){
+		$this->tags = $tags;
+	}
+	function getTags(){
+		return $this->tags;
 	}
 	function setPostDate($date){
 		$this->postDate = $date;

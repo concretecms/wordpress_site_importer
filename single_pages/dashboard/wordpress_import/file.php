@@ -21,8 +21,10 @@ function ok_submit() {
 <div class="ccm-dashboard-inner">
 <form id="import-wordpress-xml" method="post" action="<?php  echo $this->action('import_wordpress_xml') ?>">
  <div style="width:400px"> 
+	 <?php if ($records == 0){?>
  <h2> <?php echo  t("Please Upload/Select your Wordpress export xml file.") ?></h2>
 	  <?php   echo $al->file('wordpress-file','wp-file',t('Choose Wordpress File')); ?>
+ <?php } ?>
 		<?php  if ($records > 0) {
 			?><br/><h2>&nbsp;&nbsp;&nbsp;<?php echo  t("Ready to import ").$records.t(" records.");?></h2>
 		<?php }?>

@@ -6,19 +6,23 @@ What it is doing:
   - Import is incremental -- keeps user in the loop and continues where it left off
   - Includes basic image import
   - Uses WP's own text formatting functions so everything comes through looking like a paragraph, etc
+  - Pages and post import to different pages, and use different page types if selected
+  - Page parent/child relations kept
+  - Imports Wordpress Categories to the attribute 'wordpress_categories' - no nested categories, but the category name is kept
+  - Imports Wordpress Tags to the 'tags' attribute
+  - Removes all blocks from "Main" and "Blog Post More" areas on newly created pages to keep lipsum text from showing up
+  - Imports comments and comment dates
+  - If users exist with the same username as a post author's username, uses that user for the author of the newly created page
 
 Not so great:
-  - pages and posts import under the same page
   - No "Start Over" on the first step.  Choosing a new database when you have existing records doesn't do anything so the dialog shouldn't be there.
   - Not selecting a page to import under is very bad. Hundreds of pages show up under "home" and the link does not work at the WORDPRESSED step.
     - Should not proceed if "Posts" are going under Home. This basically ruins a site.
   - icon.png does not look good
 
 Would be nice:
-  - Import comments
-  - Import tags
-  - Import categories (or be able to choose a different top-level C5 page to import all posts of just one category under)
-  - Have an option to import "posts" under one page and "pages" under another.
   - Option to import just posts or just pages.
-  - Include a new page type called "WordPress Post" that is basically the "Blog" page type but without the lipsum text.
   - some kind of rudimentary support for image captions, like <div class="wp-import-image"> <img /> <span class="wp-import-caption">caption</span></div>
+  - Somehow keep post url structure, or update internal links in post content
+  - Better import of images, script as is tries to import flickr images that probably shouldn't be imported
+  - Keeping pingback comments would be nice if there was a comment block that supported pingbacks
