@@ -307,7 +307,11 @@ class DashboardWordpressImportImportController extends Controller{
 		}
 
 
-		$pageData = array('cName' => $pl->getTitle(),'cDatePublic'=>$pl->getPostdate(),'cDateAdded'=>$pl->getPostdate(),'cDescription' => $pl->getExcerpt(), 'uID'=> $uID, 'cHandle' => $pl->getPostName());
+		if ( "POST" == $pl->getPostType() ){
+			$pageData = array('cName' => $pl->getTitle(),'cDatePublic'=>$pl->getPostdate(),'cDateAdded'=>$pl->getPostdate(),'cDescription' => $pl->getExcerpt(), 'uID'=> $uID, 'cHandle' => $pl->getPostID());
+		} else {
+			$pageData = array('cName' => $pl->getTitle(),'cDatePublic'=>$pl->getPostdate(),'cDateAdded'=>$pl->getPostdate(),'cDescription' => $pl->getExcerpt(), 'uID'=> $uID, 'cHandle' => $pl->getPostName());
+		}
 		$newPage = $p->add($ct,$pageData);
 
           if (is_array($pl->getCategory())){
