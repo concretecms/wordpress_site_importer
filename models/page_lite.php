@@ -11,6 +11,7 @@ class PageLite extends Object{
      protected $tags;
 	protected $postDate;
 	protected $wpPostID; //needed to relate
+	protected $wpPostName; //needed to slug
 	function setPropertiesFromArray($array){
 		//TODO: maybe put some preg_replace here?
 		parent::setPropertiesFromArray($array);
@@ -81,5 +82,11 @@ class PageLite extends Object{
 	}
 	function getExcerpt(){
 		return $this->wpExcerpt;
+	}
+	function setPostName($post_name){
+		$this->wpPostName = $post_name;
+	}
+	function getPostName(){
+		return $this->wpPostName;
 	}
 }

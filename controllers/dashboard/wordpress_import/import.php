@@ -175,6 +175,7 @@ class DashboardWordpressImportImportController extends Controller{
 			$dc = $item->children($namespaces['dc']);
 			$author = (string)$dc->creator;
 			$parentID = (int)$wp->post_parent;
+			$postName = (string)$wp->post_name;
 
                $out_tags = array();
                $out_categories = array();
@@ -197,6 +198,7 @@ class DashboardWordpressImportImportController extends Controller{
 			$p->setContent($content);
 			$p->setAuthor($author);
 			$p->setWpParentID($parentID);
+			$p->setPostName($postName);
 			$p->setPostDate($postDate);
 			$p->setPostType($postType);
 			$p->setCategory($out_categories);
@@ -305,7 +307,11 @@ class DashboardWordpressImportImportController extends Controller{
 		}
 
 
-		$pageData = array('cName' => $pl->getTitle(),'cDatePublic'=>$pl->getPostdate(),'cDateAdded'=>$pl->getPostdate(),'cDescription' => $pl->getExcerpt(), 'uID'=> $uID);
+		if ( "POST" == $pl->getPostType() ){
+			$pageData = array('cName' => $pl->getTitle(),'cDatePublic'=>$pl->getPostdate(),'cDateAdded'=>$pl->getPostdate(),'cDescription' => $pl->getExcerpt(), 'uID'=> $uID, 'cHandle' => $pl->getPostID());
+		} else {
+			$pageData = array('cName' => $pl->getTitle(),'cDatePublic'=>$pl->getPostdate(),'cDateAdded'=>$pl->getPostdate(),'cDescription' => $pl->getExcerpt(), 'uID'=> $uID, 'cHandle' => $pl->getPostName());
+		}
 		$newPage = $p->add($ct,$pageData);
 
           if (is_array($pl->getCategory())){
