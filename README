@@ -17,7 +17,7 @@ What it is doing:
 Not so great:
   - No "Start Over" on the first step.  Choosing a new database when you have existing records doesn't do anything so the dialog shouldn't be there.
   - Not selecting a page to import under is very bad. Hundreds of pages show up under "home" and the link does not work at the WORDPRESSED step.
-    - Should not proceed if "Posts" are going under Home. This basically ruins a site.
+  - Should not proceed if "Posts" are going under Home. This basically ruins a site.
   - icon.png does not look good
 
 Would be nice:
