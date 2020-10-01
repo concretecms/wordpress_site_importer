@@ -1,5 +1,5 @@
 Wordpress Importer does a basic import of a wordpress blog.
---------------------------
+--------------------------------------------------------------------
 The main idea is that someone can take their old content and have it represented on a concrete5 site.
 
 What it is doing:
