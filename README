@@ -1,7 +1,9 @@
 Wordpress Importer does a basic import of a wordpress blog.
+--------------------------
 The main idea is that someone can take their old content and have it represented on a concrete5 site.
 
 What it is doing:
+------------------------------
   - Uses a wizard-like interface to import
   - Import is incremental -- keeps user in the loop and continues where it left off
   - Includes basic image import
@@ -15,12 +17,14 @@ What it is doing:
   - If users exist with the same username as a post author's username, uses that user for the author of the newly created page
 
 Not so great:
+-----------------------------------
   - No "Start Over" on the first step.  Choosing a new database when you have existing records doesn't do anything so the dialog shouldn't be there.
   - Not selecting a page to import under is very bad. Hundreds of pages show up under "home" and the link does not work at the WORDPRESSED step.
     - Should not proceed if "Posts" are going under Home. This basically ruins a site.
   - icon.png does not look good
 
 Would be nice:
+-----------------------------------
   - Option to import just posts or just pages.
   - some kind of rudimentary support for image captions, like <div class="wp-import-image"> <img /> <span class="wp-import-caption">caption</span></div>
   - Somehow keep post url structure, or update internal links in post content
